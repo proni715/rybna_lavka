@@ -1,5 +1,6 @@
 import { success, notFound } from '../../services/response/'
 import { User } from '.'
+import { Basket } from '../basket'
 import { sign } from '../../services/jwt'
 import { cookie } from '../../config'
 
@@ -28,6 +29,7 @@ export const showMe = ({ user }, res) => res.json(user.view(true))
 export const create = ({ bodymen: { body } }, res, next) =>
   User.create(body)
     .then((user) => {
+      Basket.create({user})
       sign(user.id)
         .then((token) => {
           res.cookie('token', token, tokenCookieOptions)

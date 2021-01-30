@@ -1,27 +1,28 @@
 import mongoose, { Schema } from 'mongoose'
 
-const productsRatingSchema = new Schema(
+const basketSchema = new Schema(
   {
     user: {
       type: mongoose.ObjectId,
       ref: 'User',
-      required: true,
-      unique: true
-    },
-    product: {
-      type: mongoose.ObjectId,
-      ref: 'Products',
       required: true
     },
-    rating: {
-      type: Number,
-      min: 1,
-      max: 5,
-      required: true
-    },
-    feedback: {
-      type: String,
-      maxlength: 256
+    products: [
+      {
+        product: {
+          type: mongoose.ObjectId,
+          ref: 'Products',
+          required: true
+        },
+        count: {
+          type: Number,
+          required: true,
+          min: 1
+        }
+      }
+    ],
+    totalPrice: {
+      type: Number
     }
   },
   {
@@ -35,15 +36,14 @@ const productsRatingSchema = new Schema(
   }
 )
 
-productsRatingSchema.methods = {
+basketSchema.methods = {
   view(full) {
     const view = {
       // simple view
       id: this.id,
-      user:  this.user,
-      product: this.product,
-      rating: this.rating,
-      feedback: this.feedback,
+      user: this.user.view(full),
+      products: this.products,
+      totalPrice: this.totalPrice,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt
     }
@@ -57,9 +57,7 @@ productsRatingSchema.methods = {
   }
 }
 
-productsRatingSchema.index({ product: 1, user: 1 }, { unique: true })
-
-const model = mongoose.model('ProductsRating', productsRatingSchema)
+const model = mongoose.model('Basket', basketSchema)
 
 export const schema = model.schema
 export default model

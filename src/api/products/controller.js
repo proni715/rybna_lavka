@@ -3,48 +3,29 @@ import { Products } from '.'
 import { ProductsRating } from '../products-rating'
 import ratingHelper from './helpers'
 
-// export const create = ({ bodymen: { body } }, res, next) =>
-//   Products.create(body)
-//     .then((products) => products.view(true))
-//     .then(success(res, 201))
-//     .catch(next)
-/////
 export const create = async (
   {
     bodymen: {
-      body: { title, price, discount, count, image, units, barcode, isActive }
+      body
     },
-    params
   },
   res,
   next
 ) => {
   try {
-    const obj = {}
-
-    obj.title = title 
-    obj.price = price
-    if (discount !== 0) {
-      obj.discount = discount
-      obj.discountPrice = price - price * (discount / 100)
+    if (body.discount !== 0) {
+      body.discountPrice = body.price - body.price * (body.discount / 100)
     }
-    obj.count = count
-    if (image) obj.image = image
-    if (units) obj.units = units
-    obj.barcode = barcode
-    obj.isActive = isActive
-
-    await Products.create(obj)
+    
+    await Products.create(body)
      .then((products) => products.view(true))
      .then(success(res, 201))
      .catch(next)
-    //return res.status(201).json({ products })
   } catch (err) {
     next(err)
   }
 }
 
-/////
 export const index = async (
   { querymen: { query, select, cursor } },
   res,
@@ -123,28 +104,16 @@ export const update = async (
 
 export const destroy = async ({ params }, res, next) => {
   try {
-    let product = await Products.findById(params.id)
-    let productRatings = await ProductsRating.find({product: params.id})
+    const product = await Products.findById(params.id)
     if (!product)
       return res.status(404).json({ valid: false, message: 'prod not found' })
+    const productRatings = await ProductsRating.find({product: params.id})
+   
     product.remove()
     if(productRatings)
       for(const rating of productRatings)rating.remove()
-    return res.status(200).json(product)
+    return res.status(204).json()
   } catch (error) {
     next(error)
   }
 }
-
-// export const destroy = ({ params }, res, next) =>{
-//   Products.findById(params.id)
-//     .then(notFound(res))
-//     .then((products) => (products ? products.remove() : null))
-//     .then(success(res, 204))
-//     .catch(next)
-//   ProductsRating.findById(params.id)
-//     .then(notFound(res))
-//     .then((productsRating) => productsRating ? productsRating.remove() : null)
-//     .then(success(res, 204))
-//     .catch(next)
-// }
