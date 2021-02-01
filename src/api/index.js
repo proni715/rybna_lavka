@@ -5,6 +5,7 @@ import passwordReset from './password-reset'
 import products from './products'
 import productsRating from './products-rating'
 import basket from './basket'
+import order from './order'
 
 const router = new Router()
 
@@ -37,5 +38,6 @@ router.use('/password-resets', passwordReset)
 router.use('/products', products)
 router.use('/products-ratings', productsRating)
 router.use('/baskets', basket)
+router.use('/orders', order)
 
 export default router

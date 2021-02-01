@@ -2,7 +2,7 @@ import { Router } from 'express'
 import { middleware as query } from 'querymen'
 import { middleware as body } from 'bodymen'
 import { token } from '../../services/passport'
-import {  index, show, update} from './controller'
+import { index, show, update, remove} from './controller'
 import { schema } from './model'
 import { Mongoose } from 'mongoose'
 export Basket, { schema } from './model'
@@ -22,10 +22,7 @@ const { products, totalPrice } = schema.tree
  * @apiError {Object} 400 Some parameters may contain invalid values.
  * @apiError 401 user access only.
  */
-router.get('/',
-  token({ required: true }),
-  query(),
-  index)
+router.get('/', token({ required: true }), query(), index)
 
 /**
  * @api {get} /baskets/:id Retrieve basket
@@ -38,9 +35,7 @@ router.get('/',
  * @apiError 404 Basket not found.
  * @apiError 401 user access only.
  */
-router.get('/:id',
-  token({ required: true }),
-  show)
+router.get('/:id', token({ required: true }), show)
 
 /**
  * @api {put} /baskets/:id Update basket
@@ -55,9 +50,18 @@ router.get('/:id',
  * @apiError 404 Basket not found.
  * @apiError 401 user access only.
  */
-router.post('/',
+router.post(
+  '/',
   token({ required: true }),
-  body({ product: {type: String}, count: {type: Number} }),
-  update)
+  body({ product: { type: String }, count: { type: Number } }),
+  update
+)
+
+router.post(
+  '/remove',
+  token({ required: true }),
+  body({ product: { type: String }}),
+  remove
+)
 
 export default router

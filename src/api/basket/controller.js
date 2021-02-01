@@ -24,7 +24,12 @@ export const show = ({ params }, res, next) =>
     .catch(next)
 
 export const update = async (
-  { user, bodymen: { body :{product,count} }, params },
+  {
+    user,
+    bodymen: {
+      body: { product, count }
+    }
+  },
   res,
   next
 ) => {
@@ -37,37 +42,81 @@ export const update = async (
         .json({ valid: false, message: 'Product not found' })
     }
     if (basket.products.length > 0) {
-      for(let element of basket.products){
-        // console.log(element.product)
-        // console.log(productInDB._id)
-        // console.log(element.product.toString() == productInDB._id.toString())
-        if(element.product.toString() === productInDB._id.toString()){
+      let duplicate = false
+      for (let element of basket.products) {
+        if (element.product.toString() === productInDB._id.toString()) {
+          duplicate = true
           element.count = count
-          basket.view()
-          basket.save()
-          return res.status(201).json(basket)
         }
-        
       }
-      basket.products.push({product : productInDB ,count:count})
-      basket.view()
-      basket.save()      
+      if (duplicate === false) {
+        await basket.products.push({
+          product: productInDB,
+          count: count
+        })
+      }
     } else {
-      basket.products.push({product : productInDB ,count:count})
-      basket.view()
-      basket.save()
-    } 
+      await basket.products.push({
+        product: productInDB,
+        count: count
+      })
+    }
+    let total = 0
+    for (let element of basket.products) {
+      let item = await Products.findById(element.product)
+      if (!item.discount) {
+        total += item.price * element.count
+      } else {
+        total += item.discountPrice * element.count
+      }
+    }
+    basket.totalPrice = total
+    basket.view(true)
+    await basket.save()
+    console.log(basket)
     return res.status(201).json(basket)
   } catch (error) {
     next(error)
   }
 }
 
-// Basket.findById(params.id)
-//   .populate('user')
-//   .then(notFound(res))
-//   .then(authorOrAdmin(res, user, 'user'))
-//   .then((basket) => basket ? Object.assign(basket, body).save() : null)
-//   .then((basket) => basket ? basket.view(true) : null)
-//   .then(success(res))
-//   .catch(next)
+export const remove = async (
+  {
+    user,
+    bodymen: {
+      body: { product }
+    }
+  },
+  res,
+  next
+) => {
+  try {
+    let basket = await Basket.findOne({ user: user._id })
+    const productInDB = await Products.findById(product)
+
+    for (let element of basket.products) {
+      if (element.product.toString() === productInDB._id.toString()) {
+        element.remove()
+      }
+    }
+    let total = 0
+    for (let element of basket.products) {
+      let item = await Products.findById(element.product)
+      console.log(item)
+      if (!item.discount) {
+        total += item.price * element.count
+        console.log(element.product.price)
+      } else {
+        total += item.discountPrice * element.count
+        console.log(element.product.discountPrice)
+      }
+    }
+    basket.totalPrice = total
+    basket.view(true)
+    await basket.save()
+    console.log(basket)
+    return res.status(201).json(basket)
+  } catch (error) {
+    next(error)
+  }
+}
