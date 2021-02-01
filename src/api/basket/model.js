@@ -9,6 +9,7 @@ const basketSchema = new Schema(
     },
     products: [
       {
+        _id:false,
         product: {
           type: mongoose.ObjectId,
           ref: 'Products',
@@ -41,7 +42,7 @@ basketSchema.methods = {
     const view = {
       // simple view
       id: this.id,
-      user: this.user.view(full),
+      user: this.user,
       products: this.products,
       totalPrice: this.totalPrice,
       createdAt: this.createdAt,

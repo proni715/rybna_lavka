@@ -25,6 +25,10 @@ const userSchema = new Schema({
     index: true,
     trim: true
   },
+  phone: {
+    type: String,
+    required: true
+  },
   role: {
     type: String,
     enum: roles,
@@ -35,7 +39,13 @@ const userSchema = new Schema({
     trim: true
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: (obj, ret) => {
+      delete ret._id
+    }
+  }
 })
 
 userSchema.path('email').set(function (email) {

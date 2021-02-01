@@ -34,7 +34,10 @@ export const update = async (
   next
 ) => {
   try {
-    let basket = await Basket.findOne({ user: user._id }).populate('products.product')
+    let basket = await Basket.findOne({ user: user._id }).populate(
+      'products.product user', 'email name price discount discountPrice barcode units title'
+    )
+  
     const productInDB = await Products.findById(product)
     if (!productInDB) {
       return res
@@ -44,7 +47,7 @@ export const update = async (
     if (basket.products.length > 0) {
       let duplicate = false
       for (let element of basket.products) {
-        if (element.product.toString() === productInDB._id.toString()) {
+        if (element.product._id.toString() === productInDB._id.toString()) {
           duplicate = true
           element.count = count
         }
@@ -70,10 +73,9 @@ export const update = async (
       }
     }
     basket.totalPrice = total
-    basket.view(true)
-    await basket.save()
-    console.log(basket)
-    return res.status(201).json(basket)
+    basket = await basket.save()
+
+    return res.status(201).json(basket.view(true))
   } catch (error) {
     next(error)
   }
@@ -90,31 +92,28 @@ export const remove = async (
   next
 ) => {
   try {
-    let basket = await Basket.findOne({ user: user._id })
+    let basket = await Basket.findOne({ user: user._id }).populate(
+      'products.product user', 'email name price discount discountPrice barcode units title'
+    )
     const productInDB = await Products.findById(product)
 
-    for (let element of basket.products) {
-      if (element.product.toString() === productInDB._id.toString()) {
-        element.remove()
-      }
-    }
+    basket.products = basket.products.filter((item)=> item.product._id.toString() !== productInDB._id.toString())
+
+    await Object.assign(basket).save()
+
     let total = 0
     for (let element of basket.products) {
-      let item = await Products.findById(element.product)
-      console.log(item)
-      if (!item.discount) {
-        total += item.price * element.count
-        console.log(element.product.price)
+      if (!element.product.discount) {
+        total += element.product.price * element.count
       } else {
-        total += item.discountPrice * element.count
-        console.log(element.product.discountPrice)
+        total += element.product.discountPrice * element.count
       }
     }
+
     basket.totalPrice = total
-    basket.view(true)
-    await basket.save()
-    console.log(basket)
-    return res.status(201).json(basket)
+    basket = await basket.save()
+
+    return res.status(201).json(basket.view(true))
   } catch (error) {
     next(error)
   }

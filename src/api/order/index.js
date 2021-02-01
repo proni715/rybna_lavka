@@ -7,7 +7,7 @@ import { schema } from './model'
 export Order, { schema } from './model'
 
 const router = new Router()
-const { name, phoneNumber, address, products, status } = schema.tree
+const { status } = schema.tree
 
 /**
  * @api {post} /orders Create order
@@ -27,7 +27,6 @@ const { name, phoneNumber, address, products, status } = schema.tree
  */
 router.post('/',
   token({ required: true }),
-  body({ name, phoneNumber, address}),
   create)
 
 /**
@@ -79,7 +78,7 @@ router.get('/:id',
  */
 router.put('/:id',
   token({ required: true, roles: ['admin'] }),
-  body({ name, phoneNumber, address, products, status }),
+  body({ status: {...status,required: true} }),
   update)
 
 /**
