@@ -22,11 +22,6 @@ export const create = async ({ user, bodymen: { body:{name, phoneNumber, address
     next(err)
   }
 }
-// export const create = ({ user, bodymen: { body } }, res, next) =>
-//   Order.create({ ...body, user })
-//     .then((order) => order.view(true))
-//     .then(success(res, 201))
-//     .catch(next)
 
 export const index = ({ querymen: { query, select, cursor } }, res, next) =>
   Order.find(query, select, cursor)

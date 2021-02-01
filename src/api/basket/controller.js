@@ -34,7 +34,7 @@ export const update = async (
   next
 ) => {
   try {
-    let basket = await Basket.findOne({ user: user._id })
+    let basket = await Basket.findOne({ user: user._id }).populate('products.product')
     const productInDB = await Products.findById(product)
     if (!productInDB) {
       return res
@@ -49,7 +49,7 @@ export const update = async (
           element.count = count
         }
       }
-      if (duplicate === false) {
+      if (!duplicate) {
         await basket.products.push({
           product: productInDB,
           count: count
@@ -63,11 +63,10 @@ export const update = async (
     }
     let total = 0
     for (let element of basket.products) {
-      let item = await Products.findById(element.product)
-      if (!item.discount) {
-        total += item.price * element.count
+      if (!element.product.discount) {
+        total += element.product.price * element.count
       } else {
-        total += item.discountPrice * element.count
+        total += element.product.discountPrice * element.count
       }
     }
     basket.totalPrice = total
