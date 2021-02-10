@@ -62,3 +62,4 @@ export const destroy = ({ params }, res, next) =>
     .then((order) => (order ? order.remove() : null))
     .then(success(res, 204))
     .catch(next)
+ 

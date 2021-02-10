@@ -29,6 +29,10 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
+  personalDiscount: {
+    type: Number,
+    default: 0
+  },
   role: {
     type: String,
     enum: roles,
