@@ -22,7 +22,7 @@ const { products, totalPrice } = schema.tree
  * @apiError {Object} 400 Some parameters may contain invalid values.
  * @apiError 401 user access only.
  */
-router.get('/', token({ required: true }), query(), index)
+router.get('/', token({ required: true }), query(), show)
 
 /**
  * @api {get} /baskets/:id Retrieve basket
@@ -35,7 +35,7 @@ router.get('/', token({ required: true }), query(), index)
  * @apiError 404 Basket not found.
  * @apiError 401 user access only.
  */
-router.get('/:id', token({ required: true }), show)
+// router.get('/:id', token({ required: true }), show)
 
 /**
  * @api {put} /baskets/:id Update basket

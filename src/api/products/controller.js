@@ -17,7 +17,7 @@ export const create = async (
       body.discountPrice = body.price - body.price * (body.discount / 100)
     }
     
-    await Products.create(body)
+    await Products.create(body) 
      .then((products) => products.view(true))
      .then(success(res, 201))
      .catch(next)

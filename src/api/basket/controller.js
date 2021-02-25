@@ -2,21 +2,21 @@ import { success, notFound, authorOrAdmin } from '../../services/response/'
 import { Products } from '../products'
 import { Basket } from '.'
 
-export const index = ({ querymen: { query, select, cursor } }, res, next) =>
-  Basket.count(query)
-    .then((count) =>
-      Basket.find(query, select, cursor)
-        .populate('user')
-        .then((baskets) => ({
-          count,
-          rows: baskets.map((basket) => basket.view())
-        }))
-    )
-    .then(success(res))
-    .catch(next)
+// export const index = ({ querymen: { query, select, cursor } }, res, next) =>
+//   Basket.count(query)
+//     .then((count) =>
+//       Basket.find(query, select, cursor)
+//         .populate('user')
+//         .then((baskets) => ({
+//           count,
+//           rows: baskets.map((basket) => basket.view())
+//         }))
+//     )
+//     .then(success(res))
+//     .catch(next)
 
-export const show = ({ params }, res, next) =>
-  Basket.findById(params.id)
+export const show = (user, res, next) =>
+  Basket.findOne({user: user._id})
     .populate('user')
     .then(notFound(res))
     .then((basket) => (basket ? basket.view() : null))

@@ -18,6 +18,7 @@ const basketSchema = new Schema(
         count: {
           type: Number,
           required: true,
+          default: 1,
           min: 1
         }
       }
