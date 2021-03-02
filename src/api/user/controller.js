@@ -30,7 +30,7 @@ export const showMe = ({ user }, res) => {
     email: user.email,
     phone: user.phone
   }
-  res.json(obj.view(true))
+  res.json(obj)
 }
 
 export const create = ({ bodymen: { body } }, res, next) =>
