@@ -24,7 +24,14 @@ export const show = ({ params }, res, next) =>
     .then(success(res))
     .catch(next)
 
-export const showMe = ({ user }, res) => res.json(user.view(true))
+export const showMe = ({ user }, res) => {
+  let obj = {
+    name: user.name,
+    email: user.email,
+    phone: user.phone
+  }
+  res.json(obj.view(true))
+}
 
 export const create = ({ bodymen: { body } }, res, next) =>
   User.create(body)
