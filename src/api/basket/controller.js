@@ -15,8 +15,8 @@ import { Basket } from '.'
 //     .then(success(res))
 //     .catch(next)
 
-export const show = (user, res, next) =>
-  Basket.findOne({user: user._id})
+export const show = async (user, res, next) =>
+  await Basket.findOne({user: user._id})
     .then(notFound(res))
     .then((basket) => (basket ? basket.view() : null))
     .then(success(res))
