@@ -17,7 +17,6 @@ import { Basket } from '.'
 
 export const show = (user, res, next) =>
   Basket.findOne({user: user._id})
-    .populate('user')
     .then(notFound(res))
     .then((basket) => (basket ? basket.view() : null))
     .then(success(res))
